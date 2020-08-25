@@ -2,6 +2,8 @@
 
 A domain rules engine based on Gherkin syntax
 
+![Node.js CI](https://github.com/zuck/tzatziki/workflows/Node.js%20CI/badge.svg)
+
 **WARNING: this project is still highly experimental and its API may change in the future!**
 
 **NOTE: while experimental, feedback is encouraged and really welcome!**
