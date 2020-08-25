@@ -1,0 +1,26 @@
+{
+  "name": "tzatziki-example",
+  "version": "0.0.1",
+  "description": "A real-world example of tzatziki usage",
+  "private": true,
+  "main": "app.js",
+  "scripts": {
+    "test": "cucumber-js",
+    "start": "fastify start -l info app.js",
+    "dev": "fastify start -w --ignore-watch='node_modules .nyc_output .git' -l info -P app.js"
+  },
+  "keywords": [],
+  "author": "Emanuele Bertoldi <emanuele.bertoldi@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "fastify": "^3.0.0",
+    "fastify-autoload": "^3.0.2",
+    "fastify-cli": "^2.1.0",
+    "fastify-plugin": "^2.0.0",
+    "fastify-sensible": "^3.0.1"
+  },
+  "devDependencies": {
+    "cucumber": "^6.0.5",
+    "tap": "^14.0.0"
+  }
+}

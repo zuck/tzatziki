@@ -1,0 +1,40 @@
+{
+  "name": "tzatziki",
+  "version": "0.0.1",
+  "description": "A domain rules engine based on Gherkin syntax",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx tap -Rspec --coverage test/**/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/zuck/tzatziki.git"
+  },
+  "keywords": [
+    "cucumber",
+    "domain",
+    "logic",
+    "rules",
+    "engine",
+    "acceptance",
+    "gherkin"
+  ],
+  "author": "Emanuele Bertoldi <emanuele.bertoldi@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zuck/tzatziki/issues"
+  },
+  "homepage": "https://github.com/zuck/tzatziki#readme",
+  "devDependencies": {
+    "eslint": "^7.7.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "tap": "^14.10.8"
+  },
+  "dependencies": {
+    "gherkin": "^9.0.0"
+  }
+}
