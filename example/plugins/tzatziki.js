@@ -17,54 +17,54 @@ const userAccount = createUserAccount()
 const initDictionary = dictionary => {
   const { Given, When, Then } = dictionary.cucumber()
 
-  Given('a user', ctx => {
-    ctx.account = userAccount
-    ctx.initialBalance = ctx.account.balance
+  Given('a user', function () {
+    this.account = userAccount
+    this.initialBalance = this.account.balance
   })
-  Given('requesting an available <amount>', ctx => {
-    const amount = ctx.req.body.amount
-    assert.ok(amount <= ctx.account.balance)
-    ctx.amount = amount
+  Given('requesting an available <amount>', function () {
+    const amount = this.req.body.amount
+    assert.ok(amount <= this.account.balance)
+    this.amount = amount
   })
-  Given('requesting an unavailable <amount>', ctx => {
-    const amount = ctx.req.body.amount
-    assert.ok(amount > ctx.account.balance)
-    ctx.amount = amount
-  })
-
-  When('she queries for her current balance', ctx => {
-    ctx.balance = getCurrentBalance(ctx.account)
-  })
-  When('she withdraws', ctx => {
-    try {
-      ctx.balance = withdraw(ctx.account, ctx.amount)
-    } catch (err) {
-      ctx.err = err
-    }
-  })
-  When('she deposits a specific <amount>', ctx => {
-    ctx.amount = ctx.req.body.amount
-    try {
-      ctx.balance = deposit(ctx.account, ctx.amount)
-    } catch (err) {
-      ctx.err = err
-    }
+  Given('requesting an unavailable <amount>', function () {
+    const amount = this.req.body.amount
+    assert.ok(amount > this.account.balance)
+    this.amount = amount
   })
 
-  Then('her credit is decreased by the withdrawn <amount>', ctx => {
-    assert.equal(ctx.account.balance, ctx.initialBalance - ctx.amount)
+  When('she queries for her current balance', function () {
+    this.balance = getCurrentBalance(this.account)
   })
-  Then('her credit is increased by the deposited <amount>', ctx => {
-    assert.equal(ctx.account.balance, ctx.initialBalance + ctx.amount)
+  When('she withdraws', function () {
+    try {
+      this.balance = withdraw(this.account, this.amount)
+    } catch (err) {
+      this.err = err
+    }
   })
-  Then('her credit is not touched', ctx => {
-    assert.equal(ctx.account.balance, ctx.initialBalance)
+  When('she deposits a specific <amount>', function () {
+    this.amount = this.req.body.amount
+    try {
+      this.balance = deposit(this.account, this.amount)
+    } catch (err) {
+      this.err = err
+    }
   })
-  Then('her up-to-date balance is returned', ctx => {
-    sendBalance(ctx.res, ctx.balance)
+
+  Then('her credit is decreased by the withdrawn <amount>', function () {
+    assert.equal(this.account.balance, this.initialBalance - this.amount)
   })
-  Then('an error is returned', ctx => {
-    sendError(ctx.res, ctx.err)
+  Then('her credit is increased by the deposited <amount>', function () {
+    assert.equal(this.account.balance, this.initialBalance + this.amount)
+  })
+  Then('her credit is not touched', function () {
+    assert.equal(this.account.balance, this.initialBalance)
+  })
+  Then('her up-to-date balance is returned', function () {
+    sendBalance(this.res, this.balance)
+  })
+  Then('an error is returned', function () {
+    sendError(this.res, this.err)
   })
 
   return dictionary

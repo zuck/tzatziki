@@ -121,12 +121,11 @@ class TzatzikiDictionary {
     const dict = this
     const ctx = context || {}
     const defs = (group in dict) ? dict[group] : []
-    for (let i = 0; i < defs.length; ++i) {
-      const def = defs[i]
+    for (const def of defs) {
       const matches = statement.match(def.pattern)
       if (matches) {
         try {
-          await def.executor(ctx, matches)
+          await def.executor.apply(ctx, matches)
           return true
         } catch (err) {
           // Try next pattern...
@@ -195,10 +194,9 @@ class TzatzikiScenario {
   }
 
   async exec (dictionary, context) {
-    const ctx = { ...context }
-    await _execClauses(this.givenClauses, dictionary, ctx)
-    await _execClauses(this.whenClauses, dictionary, ctx)
-    await _execClauses(this.thenClauses, dictionary, ctx)
+    await _execClauses(this.givenClauses, dictionary, context)
+    await _execClauses(this.whenClauses, dictionary, context)
+    await _execClauses(this.thenClauses, dictionary, context)
   }
 }
 
@@ -207,6 +205,11 @@ class TzatzikiFeature {
     this.name = name
     this.description = description
     this.scenarios = []
+    this.worldCtor = Object
+  }
+
+  setWorldConstructor (worldCtor) {
+    this.worldCtor = worldCtor
   }
 
   createScenario (name) {
@@ -218,8 +221,13 @@ class TzatzikiFeature {
   async exec (dictionary, context) {
     for (let i = 0; i < this.scenarios.length; ++i) {
       try {
+        // Make a copy of the original context for each scenario
+        // eslint-disable-next-line new-cap
+        const world = this.worldCtor()
+        const ctx = Object.assign(world, context)
+        // Execute the current scenario
         const scenario = this.scenarios[i]
-        await scenario.exec(dictionary, context)
+        await scenario.exec(dictionary, ctx)
         return scenario
       } catch (err) {
         // Try next scenario...
@@ -230,27 +238,14 @@ class TzatzikiFeature {
   }
 }
 
-class TzatzikiWorld {
-  constructor (context) {
-    this.context = context || {}
-  }
-}
-
 class Tzatziki {
   constructor (opts) {
     this.opts = {
       parser: new TzatzikiGherkinParser(),
       ...opts
     }
-    this.worlds = []
     this.features = []
     this.dictionary = new TzatzikiDictionary()
-  }
-
-  createWorld (context) {
-    const world = new TzatzikiWorld(context)
-    this.worlds.push(world)
-    return world
   }
 
   createFeature (name, description) {

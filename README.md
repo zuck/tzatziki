@@ -55,9 +55,9 @@ scenario.Then('her details are returned')
 
 // Then, populate the dictionary of definitions to provide the logic:
 
-tzatziki.dictionary.Given('a user', (ctx, matches) => { ... })
-tzatziki.dictionary.When('she requests her profile', (ctx, matches) => { ... })
-tzatziki.dictionary.Then('her details are returned', (ctx, matches) => { ... })
+tzatziki.dictionary.Given('a user', function () { ... })
+tzatziki.dictionary.When('she requests her profile', function () { ... })
+tzatziki.dictionary.Then('her details are returned', function () { ... })
 
 feature
   .exec(tzatziki.dictionary)
@@ -74,9 +74,9 @@ const tzatziki = new Tzatziki()
 
 const { Given, When, Then } = tzatziki.cucumber()
 
-Given('some preconditions are matched', (ctx, matches) => { ... })
-When('an action is performed', (ctx, matches) => { ... })
-Then('some results are expected', (ctx, matches) => { ... })
+Given('a user', function () { ... })
+When('she requests her profile', function () { ... })
+Then('her details are returned', function () { ... })
 
 // Parse an existing feature file:
 

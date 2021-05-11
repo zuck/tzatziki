@@ -3,28 +3,6 @@ const path = require('path')
 const Tzatziki = require('../index')
 
 t.test('tzatziki', async t => {
-  t.test('world', async t => {
-    t.test('creating an empty world', async t => {
-      t.plan(1)
-      const tzatziki = new Tzatziki()
-      const world = tzatziki.createWorld()
-      t.deepEqual(world.context, {}, 'should provide a world with an empty context')
-    })
-
-    t.test('creating a world with a context', async t => {
-      t.plan(1)
-      const context = {
-        a: 1,
-        b: {
-          c: 3
-        }
-      }
-      const tzatziki = new Tzatziki()
-      const world = tzatziki.createWorld(context)
-      t.deepEqual(world.context, context, 'should provide a world with the given context')
-    })
-  })
-
   t.test('dictionary', async t => {
     t.test('creating an empty dictionary', async t => {
       t.plan(3)
@@ -307,6 +285,62 @@ t.test('tzatziki', async t => {
       try {
         await feature.exec(tzatziki.dictionary)
         t.equal(state, true, 'should have invoked the executor')
+      } catch (err) {
+        console.log(err)
+        t.error(err, 'should not throw an error')
+      }
+    })
+
+    t.test('executing a feature setting a world constructor', async t => {
+      t.plan(1)
+      let state = false
+      const createWorld = () => ({
+        setState: val => { state = val }
+      })
+      const givenStatement = 'a user'
+      const whenStatement = 'requesting her profile'
+      const thenStatement = 'should return it'
+      const executor = function () { this.setState(true) }
+      const tzatziki = new Tzatziki()
+      tzatziki.dictionary.Given(givenStatement, () => true)
+      tzatziki.dictionary.When(whenStatement, () => true)
+      tzatziki.dictionary.Then(thenStatement, executor)
+      const feature = tzatziki.createFeature()
+      const scenario = feature.createScenario()
+      scenario.Given(givenStatement)
+      scenario.When(whenStatement)
+      scenario.Then(thenStatement)
+      feature.setWorldConstructor(createWorld)
+      try {
+        await feature.exec(tzatziki.dictionary)
+        t.equal(state, true, 'should be able to modify the given world context')
+      } catch (err) {
+        console.log(err)
+        t.error(err, 'should not throw an error')
+      }
+    })
+
+    t.test('executing a scenario passing a context object', async t => {
+      t.plan(1)
+      const ctx = {
+        state: false
+      }
+      const givenStatement = 'a user'
+      const whenStatement = 'requesting her profile'
+      const thenStatement = 'should return it'
+      const executor = function () { this.state = true }
+      const tzatziki = new Tzatziki()
+      tzatziki.dictionary.Given(givenStatement, () => true)
+      tzatziki.dictionary.When(whenStatement, () => true)
+      tzatziki.dictionary.Then(thenStatement, executor)
+      const feature = tzatziki.createFeature()
+      const scenario = feature.createScenario()
+      scenario.Given(givenStatement)
+      scenario.When(whenStatement)
+      scenario.Then(thenStatement)
+      try {
+        await scenario.exec(tzatziki.dictionary, ctx)
+        t.equal(ctx.state, true, 'should be able to modify the given context')
       } catch (err) {
         console.log(err)
         t.error(err, 'should not throw an error')
