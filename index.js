@@ -7,8 +7,7 @@ const THEN_GROUP = 'thenDefs'
 async function _execClauses (clauses, dictionary, context) {
   const promises = clauses.map(clause => clause.exec(dictionary, context))
   const results = await Promise.all(promises)
-  const result = results.every(item => !!item)
-  if (!result) throw new Error("Clauses didn't match")
+  return results.every(item => !!item)
 }
 
 class TzatzikiGherkinParser {
@@ -124,13 +123,8 @@ class TzatzikiDictionary {
     for (const def of defs) {
       const matches = statement.match(def.pattern)
       if (matches) {
-        try {
-          await def.executor.apply(ctx, matches)
-          return true
-        } catch (err) {
-          // Try next pattern...
-          // console.error(err)
-        }
+        await def.executor.apply(ctx, matches)
+        return true
       }
     }
     return false
@@ -194,9 +188,15 @@ class TzatzikiScenario {
   }
 
   async exec (dictionary, context) {
-    await _execClauses(this.givenClauses, dictionary, context)
-    await _execClauses(this.whenClauses, dictionary, context)
-    await _execClauses(this.thenClauses, dictionary, context)
+    const doesGivenClauseMatch = await _execClauses(this.givenClauses, dictionary, context)
+    if (!doesGivenClauseMatch) {
+      return false
+    }
+    const doesWhenClauseMatch = await _execClauses(this.whenClauses, dictionary, context)
+    if (!doesWhenClauseMatch) {
+      return false
+    }
+    return await _execClauses(this.thenClauses, dictionary, context)
   }
 }
 
@@ -219,19 +219,15 @@ class TzatzikiFeature {
   }
 
   async exec (dictionary, context) {
-    for (let i = 0; i < this.scenarios.length; ++i) {
-      try {
-        // Make a copy of the original context for each scenario
-        // eslint-disable-next-line new-cap
-        const world = this.worldCtor()
-        const ctx = Object.assign(world, context)
-        // Execute the current scenario
-        const scenario = this.scenarios[i]
-        await scenario.exec(dictionary, ctx)
+    for (const scenario of this.scenarios) {
+      // Make a copy of the original context for each scenario
+      // eslint-disable-next-line new-cap
+      const world = this.worldCtor()
+      const ctx = Object.assign(world, context)
+      // Execute the current scenario
+      const res = await scenario.exec(dictionary, ctx)
+      if (res) {
         return scenario
-      } catch (err) {
-        // Try next scenario...
-        // console.error(err)
       }
     }
     throw new Error("Scenarios didn't match")

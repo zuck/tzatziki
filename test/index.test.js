@@ -172,7 +172,7 @@ t.test('tzatziki', async t => {
     })
 
     t.test('executing a scenario with no matching clauses', async t => {
-      t.plan(2)
+      t.plan(1)
       const statement = 'a user'
       const executor = () => {}
       const tzatziki = new Tzatziki()
@@ -181,16 +181,16 @@ t.test('tzatziki', async t => {
       const scenario = feature.createScenario()
       scenario.Given('a superadmin')
       try {
-        await scenario.exec(tzatziki.dictionary)
-        t.fail('should throw an error')
+        const res = await scenario.exec(tzatziki.dictionary)
+        t.false(res, 'should return false')
       } catch (err) {
-        t.true(err, 'should throw an error')
-        t.equal(err.message, "Clauses didn't match", "should notify clauses didn't match")
+        console.log(err)
+        t.error(err, 'should not throw an error')
       }
     })
 
     t.test('executing a scenario with partially matching clauses', async t => {
-      t.plan(3)
+      t.plan(2)
       let state = false
       const givenStatement = 'a user'
       const whenStatement = 'requesting her profile'
@@ -206,12 +206,12 @@ t.test('tzatziki', async t => {
       scenario.When("requesting her brother's name")
       scenario.Then(thenStatement)
       try {
-        await scenario.exec(tzatziki.dictionary)
-        t.fail('should throw an error')
+        const res = await scenario.exec(tzatziki.dictionary)
+        t.false(res, 'should return false')
+        t.equal(state, false, 'should not have invoked the "Then" clause executor')
       } catch (err) {
-        t.true(err, 'should throw an error')
-        t.equal(err.message, "Clauses didn't match", "should notify clauses didn't match")
-        t.equal(state, false, 'should not have invoked the executor')
+        console.log(err)
+        t.error(err, 'should not throw an error')
       }
     })
 
