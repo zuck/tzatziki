@@ -38,16 +38,16 @@ When('she deposits a specific <amount>', function () {
 })
 
 Then('her credit is decreased by the withdrawn <amount>', function () {
-  assert.equal(this.account.balance, this.initialBalance - this.amount)
+  assert.strictEqual(this.account.balance, this.initialBalance - this.amount)
 })
 Then('her credit is increased by the deposited <amount>', function () {
-  assert.equal(this.account.balance, this.initialBalance + this.amount)
+  assert.strictEqual(this.account.balance, this.initialBalance + this.amount)
 })
 Then('her credit is not touched', function () {
-  assert.equal(this.account.balance, this.initialBalance)
+  assert.strictEqual(this.account.balance, this.initialBalance)
 })
 Then('her up-to-date balance is returned', function () {
-  assert.equal(this.account.balance, this.balance)
+  assert.strictEqual(this.account.balance, this.balance)
 })
 Then('an error is returned', function () {
   assert.ok(this.err)
